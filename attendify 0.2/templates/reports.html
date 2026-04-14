@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendify | Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+            <h1>Attendify</h1>
+        </div>
+        
+        <nav>
+            <a href="/dashboard">
+                <i class="fas fa-home icon"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/students">
+                <i class="fas fa-users icon"></i>
+                <span>Students</span>
+            </a>
+            <a href="/attendance">
+                <i class="fas fa-calendar-check icon"></i>
+                <span>Attendance</span>
+            </a>
+            <a href="/history">
+                <i class="fas fa-history icon"></i>
+                <span>History</span>
+            </a>
+            <a href="/reports" class="active">
+                <i class="fas fa-chart-bar icon"></i>
+                <span>Reports</span>
+            </a>
+            <a href="/summary">
+                <i class="fas fa-calendar-week icon"></i>
+                <span>Summary</span>
+            </a>
+            <a href="/settings">
+                <i class="fas fa-cog icon"></i>
+                <span>Settings</span>
+            </a>
+            <a href="/logout">
+                <i class="fas fa-sign-out-alt icon"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="user-info">
+            <div class="avatar">{{ session.get('user_name', 'U')[0].upper() }}</div>
+            <div class="details">
+                <div class="name">{{ session.get('user_name', 'User') }}</div>
+                <div class="role">Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main">
+
+        <div class="page-header">
+            <h2>Attendance Reports</h2>
+            <p>View student attendance statistics and performance.</p>
+        </div>
+
+        <!-- ===== STATS OVERVIEW ===== -->
+        <div class="stats-grid">
+            <div class="stat-card primary animate-in">
+                <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="info">
+                    <h3>Total Days</h3>
+                    <p>{{ total_days }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STUDENT REPORTS TABLE ===== -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="fas fa-users" style="color: var(--primary); margin-right: 10px;"></i>Student Attendance Report</h3>
+            </div>
+
+            {% if student_stats %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Days Attended</th>
+                            <th>Attendance %</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for s in student_stats %}
+                        <tr>
+                            <td><strong>{{ s.name }}</strong></td>
+                            <td>{{ s.email }}</td>
+                            <td>{{ s.attended }}</td>
+                            <td>
+                                <strong>{{ s.percentage }}%</strong>
+                            </td>
+                            <td>
+                                {% if s.percentage >= 90 %}
+                                <span class="status-badge present">Excellent</span>
+                                {% elif s.percentage >= 70 %}
+                                <span class="status-badge" style="background: var(--warning); color: white;">Good</span>
+                                {% elif s.percentage >= 50 %}
+                                <span class="status-badge" style="background: orange; color: white;">Fair</span>
+                                {% else %}
+                                <span class="status-badge" style="background: var(--danger); color: white;">Low</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon"><i class="fas fa-chart-bar"></i></div>
+                <h3>No Data</h3>
+                <p>Start marking attendance to see reports.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
