@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendify | Students Sorted</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+            <h1>Attendify</h1>
+        </div>
+        
+        <nav>
+            <a href="/dashboard">
+                <i class="fas fa-home icon"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/students" class="active">
+                <i class="fas fa-users icon"></i>
+                <span>Students</span>
+            </a>
+            <a href="/attendance">
+                <i class="fas fa-calendar-check icon"></i>
+                <span>Attendance</span>
+            </a>
+            <a href="/history">
+                <i class="fas fa-history icon"></i>
+                <span>History</span>
+            </a>
+            <a href="/logout">
+                <i class="fas fa-sign-out-alt icon"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="user-info">
+            <div class="avatar">{{ session.get('user_name', 'U')[0].upper() }}</div>
+            <div class="details">
+                <div class="name">{{ session.get('user_name', 'User') }}</div>
+                <div class="role">Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main">
+
+        <div class="page-header">
+            <h2>Students by Attendance</h2>
+            <p>Students sorted by attendance percentage.</p>
+        </div>
+
+        <!-- ===== SORT OPTIONS ===== -->
+        <div class="content-card" style="margin-bottom: 30px;">
+            <div class="card-body">
+                <a href="/students-sorted?sort=attendance" class="btn {% if sort == 'attendance' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    <i class="fas fa-chart-line"></i> By Attendance
+                </a>
+                <a href="/students-sorted?sort=name" class="btn {% if sort == 'name' %}btn-primary{% else %}btn-secondary{% endif %}" style="margin-left: 10px;">
+                    <i class="fas fa-sort-alpha-up"></i> By Name
+                </a>
+                <a href="/students" class="btn" style="background: var(--muted); margin-left: 10px;">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== STUDENT LIST ===== -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="fas fa-users" style="color: var(--primary); margin-right: 10px;"></i>Students ({{ students|length }})</h3>
+            </div>
+
+            {% if students %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Days Attended</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for s in students %}
+                        <tr>
+                            <td><strong>#{{ loop.index }}</strong></td>
+                            <td><strong>{{ s[1] }}</strong></td>
+                            <td>{{ s[2] }}</td>
+                            <td>{{ s[3] }}</td>
+                            <td>
+                                {% set pct = (s[3] / total_days * 100)|round(1) if total_days > 0 else 0 %}
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="flex: 1; background: var(--light); height: 16px; border-radius: 3px; overflow: hidden; max-width: 100px;">
+                                        <div style="width: {{ pct }}%; background: {% if pct >= 90 %}var(--success){% elif pct >= 70 %}var(--warning){% else %}var(--danger){% endif %}; height: 100%;"></div>
+                                    </div>
+                                    <span>{{ pct }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon"><i class="fas fa-users"></i></div>
+                <h3>No Students</h3>
+                <p>Add students to see attendance data.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

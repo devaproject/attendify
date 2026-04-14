@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendify | Attendance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+            <h1>Attendify</h1>
+        </div>
+        
+        <nav>
+            <a href="/dashboard">
+                <i class="fas fa-home icon"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/students">
+                <i class="fas fa-users icon"></i>
+                <span>Students</span>
+            </a>
+            <a href="/attendance" class="active">
+                <i class="fas fa-calendar-check icon"></i>
+                <span>Attendance</span>
+            </a>
+            <a href="/history">
+                <i class="fas fa-history icon"></i>
+                <span>History</span>
+            </a>
+            <a href="/reports">
+                <i class="fas fa-chart-bar icon"></i>
+                <span>Reports</span>
+            </a>
+            <a href="/summary">
+                <i class="fas fa-calendar-week icon"></i>
+                <span>Summary</span>
+            </a>
+            <a href="/search">
+                <i class="fas fa-search icon"></i>
+                <span>Search</span>
+            </a>
+            <a href="/logout">
+                <i class="fas fa-sign-out-alt icon"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        
+        <div class="user-info">
+            <div class="avatar">{{ session.get('user_name', 'U')[0].upper() }}</div>
+            <div class="details">
+                <div class="name">{{ session.get('user_name', 'User') }}</div>
+                <div class="role">Administrator</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="main">
+
+        <div class="page-header">
+            <h2>Mark Attendance</h2>
+            <p>Verify student identity using face recognition.</p>
+        </div>
+
+        <!-- ===== AUTO ATTENDANCE CARD ===== -->
+        <div class="content-card" style="margin-bottom: 30px; border: 2px solid var(--success);">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--success), #2ecc71);">
+                <h3><i class="fas fa-id-card" style="color: white; margin-right: 10px;"></i>Auto Attendance - Face Recognition</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="auto_attend" value="1">
+                    <p style="margin-bottom: 15px; color: var(--muted);">
+                        <i class="fas fa-info-circle"></i> Camera will open and automatically detect faces.
+                        <br><br>
+                        <b>Registered students:</b> Green box with name → Attendance marked
+                        <br>
+                        <b>Unknown persons:</b> Red box with "Unknown" → Not marked
+                    </p>
+                    <button type="submit" class="btn btn-success" style="width: 100%; padding: 15px; font-size: 16px;">
+                        <i class="fas fa-camera"></i> Start Attendance
+                    </button>
+                </form>
+
+                {% if message %}
+                    {% if "marked" in message.lower() or "already" in message.lower() %}
+                        <div class="alert alert-success" style="margin-top: 20px;">
+                            <i class="fas fa-check-circle"></i> {{ message }}
+                        </div>
+                    {% elif "unknown" in message.lower() %}
+                        <div class="alert alert-error" style="margin-top: 20px;">
+                            <i class="fas fa-exclamation-triangle"></i> {{ message }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-error" style="margin-top: 20px;">
+                            <i class="fas fa-exclamation-circle"></i> {{ message }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== INFO CARD ===== -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="fas fa-info-circle" style="color: var(--primary); margin-right: 10px;"></i>How It Works</h3>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="width: 50px; height: 50px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                            <i class="fas fa-user" style="color: var(--primary); font-size: 20px;"></i>
+                        </div>
+                        <h4 style="margin-bottom: 8px;">Select Student</h4>
+                        <p style="color: var(--muted); font-size: 13px;">Choose the student from the dropdown menu</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="width: 50px; height: 50px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                            <i class="fas fa-camera" style="color: var(--primary); font-size: 20px;"></i>
+                        </div>
+                        <h4 style="margin-bottom: 8px;">Face Verification</h4>
+                        <p style="color: var(--muted); font-size: 13px;">System verifies the face with registered profile</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="width: 50px; height: 50px; background: var(--success-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 20px;"></i>
+                        </div>
+                        <h4 style="margin-bottom: 8px;">Attendance Marked</h4>
+                        <p style="color: var(--muted); font-size: 13px;">Attendance is recorded in the database</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
